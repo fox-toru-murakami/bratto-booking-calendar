@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { ArrowLeft, ExternalLink, ChevronDown, ChevronUp, Filter, Search, RefreshCw, User, Settings, History, BellRing, LogOut, MapPin, Calendar, DollarSign, FileText, Zap } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ArrowLeft, ExternalLink, ChevronDown, ChevronUp, Filter, Search, RefreshCw, User, Settings, History, BellRing, LogOut, MapPin, Calendar, DollarSign, FileText, Zap, Copy } from 'lucide-react';
 
 const ResultsScreen = () => {
   // ユーザー情報（実際はAPIから取得）
@@ -14,6 +14,9 @@ const ResultsScreen = () => {
   
   // 検索フォーム表示の状態
   const [showSearchForm, setShowSearchForm] = useState(false);
+
+  // URLコピーの状態管理
+  const [copiedUrl, setCopiedUrl] = useState(null);
 
   // 検索条件の状態（実際には前の画面から渡される）
   const [searchParams, setSearchParams] = useState({
@@ -33,6 +36,17 @@ const ResultsScreen = () => {
     shape: ''
   });
 
+  // URLをコピーする関数
+  const copyToClipboard = (url, id) => {
+    navigator.clipboard.writeText(url);
+    setCopiedUrl(id);
+    
+    // 3秒後にコピー通知を消す
+    setTimeout(() => {
+      setCopiedUrl(null);
+    }, 3000);
+  };
+
   // 検索結果のサンプルデータ
   const [results, setResults] = useState([
     {
@@ -44,7 +58,6 @@ const ResultsScreen = () => {
       supplierWebsite: 'https://www.yamada-metal.co.jp',
       salesPerson: '田中 一郎',
       lastOrderDate: '2025-02-15',
-      productImage: '/api/placeholder/150/150',
       expandedDetail: false,
       // マッチした発注履歴の追加
       matchedHistory: [
@@ -56,7 +69,8 @@ const ResultsScreen = () => {
           size: { type: 'round', diameter: '48', length: '95' },
           processType: 'cutting',
           quantity: 50,
-          amount: 125000
+          amount: 125000,
+          imageUrl: 'https://images.unsplash.com/photo-1617781684523-b8dded3a1259?q=80&w=150&h=150&auto=format&fit=crop'
         },
         {
           id: 102,
@@ -66,7 +80,8 @@ const ResultsScreen = () => {
           size: { type: 'round', diameter: '52', length: '110' },
           processType: 'cutting',
           quantity: 100,
-          amount: 230000
+          amount: 230000,
+          // 画像なし
         },
         {
           id: 103,
@@ -76,7 +91,8 @@ const ResultsScreen = () => {
           size: { type: 'round', diameter: '45', length: '85' },
           processType: 'cutting',
           quantity: 75,
-          amount: 180000
+          amount: 180000,
+          imageUrl: 'https://images.unsplash.com/photo-1621515788745-aecc51e4c690?q=80&w=150&h=150&auto=format&fit=crop'
         }
       ]
     },
@@ -89,7 +105,6 @@ const ResultsScreen = () => {
       supplierWebsite: 'https://www.tokyo-precision.co.jp',
       salesPerson: '鈴木 健太',
       lastOrderDate: '2025-01-30',
-      productImage: '/api/placeholder/150/150',
       expandedDetail: false,
       matchedHistory: [
         {
@@ -100,7 +115,8 @@ const ResultsScreen = () => {
           size: { type: 'round', diameter: '50', length: '120' },
           processType: 'cutting',
           quantity: 30,
-          amount: 210000
+          amount: 210000,
+          imageUrl: 'https://images.unsplash.com/photo-1534398079543-7ae6d016b86a?q=80&w=150&h=150&auto=format&fit=crop'
         },
         {
           id: 202,
@@ -110,7 +126,8 @@ const ResultsScreen = () => {
           size: { type: 'round', diameter: '55', length: '90' },
           processType: 'cutting',
           quantity: 25,
-          amount: 175000
+          amount: 175000,
+          // 画像なし
         }
       ]
     },
@@ -123,7 +140,6 @@ const ResultsScreen = () => {
       supplierWebsite: 'https://www.osaka-metal.co.jp',
       salesPerson: '佐藤 真一',
       lastOrderDate: '2025-01-22',
-      productImage: '/api/placeholder/150/150',
       expandedDetail: false,
       matchedHistory: [
         {
@@ -134,7 +150,8 @@ const ResultsScreen = () => {
           size: { type: 'round', diameter: '45', length: '110' },
           processType: 'cutting',
           quantity: 40,
-          amount: 240000
+          amount: 240000,
+          imageUrl: 'https://images.unsplash.com/photo-1590959651373-a3db0f38a961?q=80&w=150&h=150&auto=format&fit=crop'
         }
       ]
     },
@@ -147,7 +164,6 @@ const ResultsScreen = () => {
       supplierWebsite: 'https://www.nagoya-parts.co.jp',
       salesPerson: '伊藤 大輔',
       lastOrderDate: '2025-01-10',
-      productImage: '/api/placeholder/150/150',
       expandedDetail: false,
       matchedHistory: [
         {
@@ -158,7 +174,8 @@ const ResultsScreen = () => {
           size: { type: 'round', diameter: '52', length: '105' },
           processType: 'cutting',
           quantity: 35,
-          amount: 195000
+          amount: 195000,
+          // 画像なし
         }
       ]
     },
@@ -171,7 +188,6 @@ const ResultsScreen = () => {
       supplierWebsite: 'https://www.fukuoka-metal.co.jp',
       salesPerson: '高橋 誠',
       lastOrderDate: '2024-12-15',
-      productImage: '/api/placeholder/150/150',
       expandedDetail: false,
       matchedHistory: [
         {
@@ -182,11 +198,20 @@ const ResultsScreen = () => {
           size: { type: 'round', diameter: '48', length: '98' },
           processType: 'cutting',
           quantity: 20,
-          amount: 140000
+          amount: 140000,
+          imageUrl: 'https://images.unsplash.com/photo-1610513320995-1ad4bbf25e55?q=80&w=150&h=150&auto=format&fit=crop'
         }
       ]
     }
   ]);
+
+  // アニメーション用のステート
+  const [animated, setAnimated] = useState(false);
+  
+  useEffect(() => {
+    // コンポーネントがマウントされたらアニメーションを開始
+    setAnimated(true);
+  }, []);
 
   // 検索条件を更新
   const handleInputChange = (e, section, subsection = null) => {
@@ -306,19 +331,26 @@ const ResultsScreen = () => {
           </button>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
-          {searchParams.size.type === 'round' && (
-            <div className="flex items-center bg-white p-2 rounded shadow-sm">
-              <div className="bg-blue-100 p-1 rounded mr-2">
-                <svg className="w-4 h-4 text-blue-600" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          {/* サイズ情報 - 常に表示するように変更 */}
+          <div className="flex items-center bg-white p-2 rounded shadow-sm">
+            <div className="bg-blue-100 p-1 rounded mr-2">
+              <svg className="w-4 h-4 text-blue-600" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                {searchParams.size.type === 'round' ? (
                   <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
-                </svg>
-              </div>
-              <div>
-                <span className="text-xs text-gray-500">サイズ</span>
-                <div className="font-medium">φ{searchParams.size.diameter}×{searchParams.size.length}mm</div>
+                ) : (
+                  <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="2" />
+                )}
+              </svg>
+            </div>
+            <div>
+              <span className="text-xs text-gray-500">サイズ</span>
+              <div className="font-medium">
+                {searchParams.size.type === 'round' 
+                  ? `φ${searchParams.size.diameter}×${searchParams.size.length}mm`
+                  : `${searchParams.size.minSize || '0'}〜${searchParams.size.maxSize || '0'}mm`}
               </div>
             </div>
-          )}
+          </div>
           <div className="flex items-center bg-white p-2 rounded shadow-sm">
             <div className="bg-purple-100 p-1 rounded mr-2">
               <svg className="w-4 h-4 text-purple-600" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -369,9 +401,10 @@ const ResultsScreen = () => {
           <div className="flex items-center bg-white p-2 rounded shadow-sm">
             <div className="bg-purple-100 p-1 rounded mr-2">
               <svg className="w-4 h-4 text-purple-600" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 4V4C14.7614 4 17 6.23858 17 9V17C17 18.6569 15.6569 20 14 20H10C8.34315 20 7 18.6569 7 17V9C7 6.23858 9.23858 4 12 4Z" stroke="currentColor" strokeWidth="2" />
-                <path d="M17 6L19 6C19.5523 6 20 6.44772 20 7V10C20 10.5523 19.5523 11 19 11H17" stroke="currentColor" strokeWidth="2" />
-                <path d="M7 6L5 6C4.44772 6 4 6.44772 4 7V10C4 10.5523 4.44772 11 5 11H7" stroke="currentColor" strokeWidth="2" />
+                {/* 鉄アレイ/重りをイメージしたアイコン */}
+                <rect x="6" y="4" width="12" height="6" rx="1" stroke="currentColor" strokeWidth="2" />
+                <rect x="9" y="10" width="6" height="10" rx="1" stroke="currentColor" strokeWidth="2" />
+                <line x1="8" y1="7" x2="16" y2="7" stroke="currentColor" strokeWidth="1.5" />
               </svg>
             </div>
             <div>
@@ -389,7 +422,7 @@ const ResultsScreen = () => {
     if (!showSearchForm) return null;
 
     return (
-      <div className="mb-6 bg-white rounded-lg border border-gray-200 shadow-md">
+      <div className="mb-6 bg-white rounded-lg border border-gray-200 shadow-md text-gray-900">
         <div className="px-4 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-t-lg">
           <h3 className="font-medium">検索条件を変更</h3>
         </div>
@@ -444,7 +477,7 @@ const ResultsScreen = () => {
                     </label>
                     <input
                       type="number"
-                      className="w-full border rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full border rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900"
                       value={searchParams.size.diameter}
                       onChange={(e) => handleInputChange(e, 'size', 'diameter')}
                     />
@@ -455,7 +488,7 @@ const ResultsScreen = () => {
                     </label>
                     <input
                       type="number"
-                      className="w-full border rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full border rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900"
                       value={searchParams.size.length}
                       onChange={(e) => handleInputChange(e, 'size', 'length')}
                     />
@@ -469,7 +502,7 @@ const ResultsScreen = () => {
                     </label>
                     <input
                       type="number"
-                      className="w-full border rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full border rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900"
                       value={searchParams.size.minSize}
                       onChange={(e) => handleInputChange(e, 'size', 'minSize')}
                     />
@@ -480,7 +513,7 @@ const ResultsScreen = () => {
                     </label>
                     <input
                       type="number"
-                      className="w-full border rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full border rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900"
                       value={searchParams.size.maxSize}
                       onChange={(e) => handleInputChange(e, 'size', 'maxSize')}
                     />
@@ -500,7 +533,7 @@ const ResultsScreen = () => {
               <input
                 type="text"
                 name="material"
-                className="w-full border rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full border rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white text-gray-900"
                 placeholder="例: SUS304"
                 value={searchParams.material}
                 onChange={handleInputChange}
@@ -518,7 +551,7 @@ const ResultsScreen = () => {
               </label>
               <select
                 name="quantity"
-                className="w-full border rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full border rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white text-gray-900"
                 value={searchParams.quantity}
                 onChange={handleInputChange}
               >
@@ -541,7 +574,7 @@ const ResultsScreen = () => {
               </label>
               <select
                 name="processType"
-                className="w-full border rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full border rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white text-gray-900"
                 value={searchParams.processType}
                 onChange={handleInputChange}
               >
@@ -564,7 +597,7 @@ const ResultsScreen = () => {
               </label>
               <select
                 name="supplierArea"
-                className="w-full border rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full border rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white text-gray-900"
                 value={searchParams.supplierArea}
                 onChange={handleInputChange}
               >
@@ -580,16 +613,17 @@ const ResultsScreen = () => {
             <div className="bg-white border border-gray-200 rounded-lg p-3">
               <label className="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                 <svg className="w-4 h-4 mr-1 text-purple-600" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12 4V4C14.7614 4 17 6.23858 17 9V17C17 18.6569 15.6569 20 14 20H10C8.34315 20 7 18.6569 7 17V9C7 6.23858 9.23858 4 12 4Z" stroke="currentColor" strokeWidth="2" />
-                  <path d="M17 6L19 6C19.5523 6 20 6.44772 20 7V10C20 10.5523 19.5523 11 19 11H17" stroke="currentColor" strokeWidth="2" />
-                  <path d="M7 6L5 6C4.44772 6 4 6.44772 4 7V10C4 10.5523 4.44772 11 5 11H7" stroke="currentColor" strokeWidth="2" />
+                  {/* 鉄アレイ/重りをイメージしたアイコン */}
+                  <rect x="6" y="4" width="12" height="6" rx="1" stroke="currentColor" strokeWidth="2" />
+                  <rect x="9" y="10" width="6" height="10" rx="1" stroke="currentColor" strokeWidth="2" />
+                  <line x1="8" y1="7" x2="16" y2="7" stroke="currentColor" strokeWidth="1.5" />
                 </svg>
                 重量 (kg)
               </label>
               <input
                 type="number"
                 name="weight"
-                className="w-full border rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full border rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white text-gray-900"
                 placeholder="例: 10.5"
                 value={searchParams.weight}
                 onChange={handleInputChange}
@@ -623,7 +657,7 @@ const ResultsScreen = () => {
           <div className="flex items-center gap-2 bg-white p-1 px-3 rounded-full border shadow-sm">
             <span className="text-sm text-gray-600">並べ替え:</span>
             <select
-              className="border-none text-sm focus:outline-none focus:ring-0 bg-transparent"
+              className="border-none text-sm focus:outline-none focus:ring-0 bg-transparent text-gray-900"
               value={sortOption}
               onChange={(e) => handleSort(e.target.value)}
             >
@@ -635,7 +669,7 @@ const ResultsScreen = () => {
         </div>
 
         {results.map(result => (
-          <div key={result.id} className="border border-gray-200 rounded-lg overflow-hidden shadow-md bg-white">
+          <div key={result.id} className="border border-gray-200 rounded-lg overflow-hidden shadow-md bg-white text-gray-900">
             {/* 仕入先情報ヘッダー */}
             <div className="grid grid-cols-1 md:grid-cols-5 gap-4 p-4">
               {/* 左側: 仕入先名とマッチ度 */}
@@ -643,10 +677,10 @@ const ResultsScreen = () => {
                 <h3 className="text-lg font-medium text-blue-800">{result.supplierName}</h3>
                 <div className="flex flex-col mt-2">
                   <div className="flex items-center gap-2 mb-1">
-                    <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
                       <div
-                        className="bg-gradient-to-r from-[#1A1464] to-[#0065B3] h-2 rounded-full"
-                        style={{ width: `${result.matchDegree}%` }}
+                        className={`bg-gradient-to-r from-[#1A1464] to-[#0065B3] h-2 rounded-full ${animated ? 'transition-all duration-1000 ease-out' : 'w-0'}`}
+                        style={{ width: animated ? `${result.matchDegree}%` : '0%' }}
                       ></div>
                     </div>
                     <span className="text-sm font-medium text-[#1A1464]">{result.matchDegree}%</span>
@@ -690,7 +724,7 @@ const ResultsScreen = () => {
             {result.expandedDetail && (
               <div className="border-t border-gray-200 bg-gray-50">
                 {/* 仕入先基本情報 */}
-                <div className="p-4 grid grid-cols-1 md:grid-cols-3 gap-4 border-b border-gray-200">
+                <div className="p-4 border-b border-gray-200">
                   {/* 基本情報 */}
                   <div className="space-y-2">
                     <h4 className="text-sm font-semibold text-[#0065B3] mb-2">仕入先情報</h4>
@@ -704,30 +738,26 @@ const ResultsScreen = () => {
                       <span className="text-gray-600">最新発注日:</span> 
                       <span className="font-medium">{result.lastOrderDate}</span>
                     </p>
-                    <p className="text-sm flex items-center gap-2">
+                    <p className="text-sm flex items-center gap-2 flex-wrap">
                       <ExternalLink size={14} className="text-[#0065B3]" />
                       <span className="text-gray-600">Webサイト:</span>
                       <a
                         href={result.supplierWebsite}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-[#0065B3] hover:underline font-medium"
+                        className="text-[#0065B3] hover:underline font-medium truncate max-w-[200px]"
                       >
-                        訪問する
+                        {result.supplierWebsite}
                       </a>
+                      <button
+                        onClick={() => copyToClipboard(result.supplierWebsite, result.id)}
+                        className="text-gray-500 hover:text-blue-600 p-1 ml-auto"
+                        title="URLをコピー"
+                      >
+                        <Copy size={14} />
+                        {copiedUrl === result.id && <span className="text-xs text-green-600 ml-1">コピーしました</span>}
+                      </button>
                     </p>
-                  </div>
-                  
-                  {/* 商品画像 */}
-                  <div className="md:col-span-2 flex justify-center md:justify-start">
-                    <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-sm">
-                      <p className="text-xs font-medium mb-2 text-center text-gray-600">商品サンプル</p>
-                      <img
-                        src={result.productImage}
-                        alt="商品サンプル"
-                        className="w-32 h-32 object-cover border rounded-lg"
-                      />
-                    </div>
                   </div>
                 </div>
                 
@@ -748,6 +778,7 @@ const ResultsScreen = () => {
                           <th className="px-3 py-2 text-xs font-medium text-gray-500 text-left">加工</th>
                           <th className="px-3 py-2 text-xs font-medium text-gray-500 text-right">数量</th>
                           <th className="px-3 py-2 text-xs font-medium text-gray-500 text-right">金額</th>
+                          <th className="px-3 py-2 text-xs font-medium text-gray-500 text-center">商品画像</th>
                         </tr>
                       </thead>
                       <tbody className="bg-white divide-y divide-gray-200 text-sm">
@@ -764,6 +795,25 @@ const ResultsScreen = () => {
                             <td className="px-3 py-2">{history.processType === 'cutting' ? '切削加工' : history.processType}</td>
                             <td className="px-3 py-2 text-right">{history.quantity}個</td>
                             <td className="px-3 py-2 text-right font-medium">{history.amount.toLocaleString()}円</td>
+                            <td className="px-3 py-2 text-center">
+                              {history.imageUrl ? (
+                                <a 
+                                  href={history.imageUrl} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                  className="inline-block"
+                                >
+                                  <img 
+                                    src={history.imageUrl} 
+                                    alt={history.productName} 
+                                    className="w-12 h-12 object-cover border border-gray-200 rounded hover:opacity-90 hover:shadow-md transition-all"
+                                    title={`${history.productName}の画像`}
+                                  />
+                                </a>
+                              ) : (
+                                <span className="text-xs text-gray-400">画像なし</span>
+                              )}
+                            </td>
                           </tr>
                         ))}
                       </tbody>
@@ -782,9 +832,9 @@ const ResultsScreen = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-100 text-gray-900">
       {/* ヘッダー */}
-      <header className="bg-white shadow-md">
+      <header className="bg-white shadow-md text-gray-900">
         <div className="max-w-6xl mx-auto px-4 py-2 flex justify-between items-center">
           {/* ロゴ部分 */}
           <div className="flex items-center space-x-2">
@@ -793,8 +843,8 @@ const ResultsScreen = () => {
                 <tspan fill="#1A1464">調達</tspan><tspan fill="#0065B3">NAVI</tspan>
               </text>
               
-              {/* 虫眼鏡アイコン */}
-              <g transform="translate(165, 25)">
+              {/* 虫眼鏡アイコン - 位置を調整 */}
+              <g transform="translate(135, 18)">
                 <circle cx="7" cy="7" r="7" fill="none" stroke="#1A1464" strokeWidth="2"></circle>
                 <line x1="12" y1="12" x2="18" y2="18" stroke="#1A1464" strokeWidth="2" strokeLinecap="round"></line>
               </g>
@@ -814,11 +864,12 @@ const ResultsScreen = () => {
                 className="flex items-center space-x-2 p-2 rounded-full hover:bg-gray-100"
                 onClick={() => setUserMenuOpen(!userMenuOpen)}
               >
-                <img 
-                  src={userInfo.avatar} 
-                  alt={userInfo.name}
-                  className="w-8 h-8 rounded-full border border-gray-300"
-                />
+                <div 
+                  className="w-8 h-8 rounded-full flex items-center justify-center bg-orange-500 text-white font-medium"
+                  aria-label={userInfo.name}
+                >
+                  {userInfo.name.charAt(0)}
+                </div>
                 <span className="text-sm font-medium">{userInfo.name}</span>
                 <ChevronDown size={16} />
               </button>
@@ -869,7 +920,7 @@ const ResultsScreen = () => {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
+        <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-6 text-gray-900">
           <div className="bg-gradient-to-r from-[#1A1464] to-[#0065B3] p-4 text-white">
             <h1 className="text-xl font-bold flex items-center">
               <Zap className="mr-2" size={24} />
