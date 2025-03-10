@@ -18,11 +18,22 @@ const SearchScreen = () => {
       minSize: '',
       maxSize: ''
     },
-    material: '',
+    material: {
+      type: 'custom', // 'predefined' or 'custom'
+      value: '',
+      predefinedValue: ''
+    },
     quantity: '',
     processType: '',
-    supplierArea: '',
-    weight: '',
+    supplierArea: {
+      region: '',  // エリア（関東など）
+      prefecture: '' // 都道府県
+    },
+    weight: {
+      type: 'select', // 'select' または 'number'
+      selectValue: '',
+      numberValue: ''
+    },
     productName: '',
     shape: ''
   });
@@ -67,6 +78,54 @@ const SearchScreen = () => {
     }
   };
 
+  // エリア選択時の処理
+  const handleRegionChange = (e) => {
+    const regionValue = e.target.value;
+    setSearchParams({
+      ...searchParams,
+      supplierArea: {
+        region: regionValue,
+        prefecture: ''  // 地域が変更されたら県はリセット
+      }
+    });
+  };
+
+  // 都道府県選択時の処理
+  const handlePrefectureChange = (e) => {
+    const prefectureValue = e.target.value;
+    setSearchParams({
+      ...searchParams,
+      supplierArea: {
+        ...searchParams.supplierArea,
+        prefecture: prefectureValue
+      }
+    });
+  };
+
+  // 材質タイプの切り替え
+  const handleMaterialTypeChange = (type) => {
+    setSearchParams({
+      ...searchParams,
+      material: {
+        ...searchParams.material,
+        type
+      }
+    });
+  };
+
+  // 材質が選択されたときの処理
+  const handleMaterialSelect = (e) => {
+    const value = e.target.value;
+    setSearchParams({
+      ...searchParams,
+      material: {
+        ...searchParams.material,
+        predefinedValue: value,
+        value: value === 'custom' ? searchParams.material.value : value
+      }
+    });
+  };
+
   // フリー検索実行
   const handleFreeSearch = (e) => {
     e.preventDefault();
@@ -83,7 +142,19 @@ const SearchScreen = () => {
       return;
     }
     
-    console.log('条件検索:', searchParams);
+    // 検索パラメータの整理（APIに送信する前の整形）
+    const searchData = {
+      ...searchParams,
+      material: searchParams.material.type === 'predefined' 
+        ? searchParams.material.predefinedValue 
+        : searchParams.material.value,
+      weight: searchParams.weight.type === 'select'
+        ? searchParams.weight.selectValue
+        : searchParams.weight.numberValue,
+      supplierArea: searchParams.supplierArea.prefecture || searchParams.supplierArea.region // 都道府県が選択されていればそれを、なければエリアを使用
+    };
+    
+    console.log('条件検索:', searchData);
     // 検索ロジックをここに実装（API呼び出しなど）
   };
 
@@ -97,11 +168,22 @@ const SearchScreen = () => {
         minSize: '',
         maxSize: ''
       },
-      material: '',
+      material: {
+        type: 'custom',
+        value: '',
+        predefinedValue: ''
+      },
       quantity: '',
       processType: '',
-      supplierArea: '',
-      weight: '',
+      supplierArea: {
+        region: '',
+        prefecture: ''
+      },
+      weight: {
+        type: 'select',
+        selectValue: '',
+        numberValue: ''
+      },
       productName: '',
       shape: ''
     });
@@ -125,16 +207,109 @@ const SearchScreen = () => {
     { value: 'bending', label: '曲げ加工' },
     { value: 'welding', label: '溶接' }
   ];
+  
+  // 重量のオプション
+  const weightOptions = [
+    { value: '', label: '選択してください' },
+    { value: '0-1', label: '〜1kg' },
+    { value: '1-5', label: '1kg〜5kg' },
+    { value: '5-10', label: '5kg〜10kg' },
+    { value: '10-30', label: '10kg〜30kg' },
+    { value: '30+', label: '30kg以上' }
+  ];
 
-  // 都道府県のオプション（一部抜粋）
+  // 材質のオプション
+  const materialOptions = [
+    { value: '', label: '選択してください' },
+    { value: 'SUS304', label: 'SUS304（ステンレス）' },
+    { value: 'SUS316', label: 'SUS316（ステンレス）' },
+    { value: 'S45C', label: 'S45C（炭素鋼）' },
+    { value: 'A5052', label: 'A5052（アルミニウム）' },
+    { value: 'A2017', label: 'A2017（アルミニウム）' },
+    { value: 'C1100', label: 'C1100（銅）' },
+    { value: 'custom', label: 'その他（直接入力）' }
+  ];
+
+  // 都道府県のオプション - 地域でグループ化
   const prefectureOptions = [
     { value: '', label: '選択してください' },
-    { value: 'tokyo', label: '東京都' },
-    { value: 'osaka', label: '大阪府' },
-    { value: 'aichi', label: '愛知県' },
-    { value: 'kanagawa', label: '神奈川県' },
-    { value: 'saitama', label: '埼玉県' }
-    // 他の都道府県も追加
+    { 
+      label: '関東エリア',
+      value: '関東エリア',
+      options: [
+        { value: '東京', label: '東京都' },
+        { value: '神奈川', label: '神奈川県' },
+        { value: '埼玉', label: '埼玉県' },
+        { value: '千葉', label: '千葉県' },
+        { value: '茨城', label: '茨城県' },
+        { value: '栃木', label: '栃木県' },
+        { value: '群馬', label: '群馬県' }
+      ]
+    },
+    { 
+      label: '関西エリア',
+      value: '関西エリア',
+      options: [
+        { value: '大阪', label: '大阪府' },
+        { value: '京都', label: '京都府' },
+        { value: '兵庫', label: '兵庫県' },
+        { value: '奈良', label: '奈良県' },
+        { value: '滋賀', label: '滋賀県' },
+        { value: '和歌山', label: '和歌山県' }
+      ]
+    },
+    { 
+      label: '中部エリア',
+      value: '中部エリア',
+      options: [
+        { value: '愛知', label: '愛知県' },
+        { value: '静岡', label: '静岡県' },
+        { value: '岐阜', label: '岐阜県' },
+        { value: '三重', label: '三重県' }
+      ]
+    },
+    { 
+      label: '北海道・東北エリア',
+      value: '北海道・東北エリア',
+      options: [
+        { value: '北海道', label: '北海道' },
+        { value: '青森', label: '青森県' },
+        { value: '岩手', label: '岩手県' },
+        { value: '宮城', label: '宮城県' },
+        { value: '秋田', label: '秋田県' },
+        { value: '山形', label: '山形県' },
+        { value: '福島', label: '福島県' }
+      ]
+    },
+    { 
+      label: '中国・四国エリア',
+      value: '中国・四国エリア',
+      options: [
+        { value: '鳥取', label: '鳥取県' },
+        { value: '島根', label: '島根県' },
+        { value: '岡山', label: '岡山県' },
+        { value: '広島', label: '広島県' },
+        { value: '山口', label: '山口県' },
+        { value: '徳島', label: '徳島県' },
+        { value: '香川', label: '香川県' },
+        { value: '愛媛', label: '愛媛県' },
+        { value: '高知', label: '高知県' }
+      ]
+    },
+    { 
+      label: '九州・沖縄エリア',
+      value: '九州・沖縄エリア',
+      options: [
+        { value: '福岡', label: '福岡県' },
+        { value: '佐賀', label: '佐賀県' },
+        { value: '長崎', label: '長崎県' },
+        { value: '熊本', label: '熊本県' },
+        { value: '大分', label: '大分県' },
+        { value: '宮崎', label: '宮崎県' },
+        { value: '鹿児島', label: '鹿児島県' },
+        { value: '沖縄', label: '沖縄県' }
+      ]
+    }
   ];
 
   // 形状のオプション
@@ -356,7 +531,7 @@ const SearchScreen = () => {
                     )}
                   </div>
 
-                  {/* 材質 */}
+                  {/* 材質 - 更新部分 */}
                   <div className="bg-white border border-gray-200 rounded-lg p-3 shadow-sm">
                     <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
                       <svg className="w-5 h-5 mr-2 text-[#1A1464]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -364,32 +539,146 @@ const SearchScreen = () => {
                       </svg>
                       材質
                     </label>
-                    <input
-                      type="text"
-                      name="material"
-                      className="w-full border rounded-md px-3 py-1 focus:outline-none focus:ring-2 focus:ring-[#1A1464] bg-white text-gray-900"
-                      placeholder="例: SUS304"
-                      value={searchParams.material}
-                      onChange={handleInputChange}
-                    />
+                    
+                    <div className="mb-2">
+                      <div className="inline-flex rounded-md shadow-sm overflow-hidden bg-white mb-2">
+                        <button
+                          type="button"
+                          className={`px-4 py-1 flex items-center text-sm font-medium border
+                            ${searchParams.material.type === 'predefined' 
+                              ? 'bg-[#1A1464] text-white border-[#1A1464]' 
+                              : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                            } first:rounded-l-lg first:border-r-0 last:rounded-r-lg transition-colors`}
+                          onClick={() => handleMaterialTypeChange('predefined')}
+                        >
+                          選択
+                        </button>
+                        <button
+                          type="button"
+                          className={`px-4 py-1 flex items-center text-sm font-medium border
+                            ${searchParams.material.type === 'custom' 
+                              ? 'bg-[#1A1464] text-white border-[#1A1464]' 
+                              : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                            } first:rounded-l-lg first:border-r-0 last:rounded-r-lg transition-colors`}
+                          onClick={() => handleMaterialTypeChange('custom')}
+                        >
+                          直接入力
+                        </button>
+                      </div>
+                    </div>
+                    
+                    {searchParams.material.type === 'predefined' ? (
+                      <select
+                        className="w-full border rounded-md px-3 py-1 focus:outline-none focus:ring-2 focus:ring-[#1A1464]"
+                        value={searchParams.material.predefinedValue}
+                        onChange={handleMaterialSelect}
+                      >
+                        {materialOptions.map(option => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <input
+                        type="text"
+                        className="w-full border rounded-md px-3 py-1 focus:outline-none focus:ring-2 focus:ring-[#1A1464] bg-white text-gray-900"
+                        placeholder="例: SUS304、アルミ合金、炭素鋼など"
+                        value={searchParams.material.value}
+                        onChange={(e) => handleInputChange(e, 'material', 'value')}
+                      />
+                    )}
+                    
+                    {searchParams.material.predefinedValue === 'custom' && searchParams.material.type === 'predefined' && (
+                      <div className="mt-2">
+                        <input
+                          type="text"
+                          className="w-full border rounded-md px-3 py-1 focus:outline-none focus:ring-2 focus:ring-[#1A1464] bg-white text-gray-900"
+                          placeholder="材質を入力してください"
+                          value={searchParams.material.value}
+                          onChange={(e) => handleInputChange(e, 'material', 'value')}
+                        />
+                      </div>
+                    )}
                   </div>
 
-                  {/* 数量/ロット */}
+                  {/* 重量 - 選択式と数値入力に対応 */}
                   <div className="bg-white border border-gray-200 rounded-lg p-3 shadow-sm">
                     <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
                       <svg className="w-5 h-5 mr-2 text-[#1A1464]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M7 16.2686C5.14625 15.1279 4 13.1901 4 11C4 7.68629 7.58172 5 12 5C16.4183 5 20 7.68629 20 11C20 13.1901 18.8537 15.1279 17 16.2686" stroke="currentColor" strokeWidth="2" strokeLinecap="round"></path>
-                        <path d="M12 13V20" stroke="currentColor" strokeWidth="2" strokeLinecap="round"></path>
+                        <rect x="6" y="4" width="12" height="6" rx="1" stroke="currentColor" strokeWidth="2" />
+                        <rect x="9" y="10" width="6" height="10" rx="1" stroke="currentColor" strokeWidth="2" />
+                        <line x1="8" y1="7" x2="16" y2="7" stroke="currentColor" strokeWidth="1.5" />
                       </svg>
-                      数量/ロット
+                      重量
+                    </label>
+                    
+                    <div className="mb-2">
+                      <div className="inline-flex rounded-md shadow-sm overflow-hidden bg-white mb-2">
+                        <button
+                          type="button"
+                          className={`px-4 py-1 flex items-center text-sm font-medium border
+                            ${searchParams.weight.type === 'select' 
+                              ? 'bg-[#1A1464] text-white border-[#1A1464]' 
+                              : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                            } first:rounded-l-lg first:border-r-0 last:rounded-r-lg transition-colors`}
+                          onClick={() => handleWeightTypeChange('select')}
+                        >
+                          選択
+                        </button>
+                        <button
+                          type="button"
+                          className={`px-4 py-1 flex items-center text-sm font-medium border
+                            ${searchParams.weight.type === 'number' 
+                              ? 'bg-[#1A1464] text-white border-[#1A1464]' 
+                              : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                            } first:rounded-l-lg first:border-r-0 last:rounded-r-lg transition-colors`}
+                          onClick={() => handleWeightTypeChange('number')}
+                        >
+                          数値
+                        </button>
+                      </div>
+                    </div>
+                    
+                    {searchParams.weight.type === 'select' ? (
+                      <select
+                        className="w-full border rounded-md px-3 py-1 focus:outline-none focus:ring-2 focus:ring-[#1A1464]"
+                        value={searchParams.weight.selectValue}
+                        onChange={(e) => handleInputChange(e, 'weight', 'selectValue')}
+                      >
+                        {weightOptions.map(option => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <input
+                        type="number"
+                        className="w-full border rounded-md px-3 py-1 focus:outline-none focus:ring-2 focus:ring-[#1A1464]"
+                        placeholder="数値を入力 (kg)"
+                        value={searchParams.weight.numberValue}
+                        onChange={(e) => handleInputChange(e, 'weight', 'numberValue')}
+                      />
+                    )}
+                  </div>
+
+                   {/* 形状 */}
+                   <div className="bg-white border border-gray-200 rounded-lg p-3 shadow-sm">
+                    <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
+                      <svg className="w-5 h-5 mr-2 text-[#1A1464]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M4 5.11182C4 4.49772 4.49772 4 5.11182 4H18.8882C19.5023 4 20 4.49772 20 5.11182V18.8882C20 19.5023 19.5023 20 18.8882 20H5.11182C4.49772 20 4 19.5023 4 18.8882V5.11182Z" stroke="currentColor" strokeWidth="2"></path>
+                        <circle cx="12" cy="12" r="6" stroke="currentColor" strokeWidth="2"></circle>
+                      </svg>
+                      形状
                     </label>
                     <select
-                      name="quantity"
+                      name="shape"
                       className="w-full border rounded-md px-3 py-1 focus:outline-none focus:ring-2 focus:ring-[#1A1464]"
-                      value={searchParams.quantity}
+                      value={searchParams.shape}
                       onChange={handleInputChange}
                     >
-                      {quantityOptions.map(option => (
+                      {shapeOptions.map(option => (
                         <option key={option.value} value={option.value}>
                           {option.label}
                         </option>
@@ -420,50 +709,6 @@ const SearchScreen = () => {
                     </select>
                   </div>
 
-                  {/* 仕入先エリア */}
-                  <div className="bg-white border border-gray-200 rounded-lg p-3 shadow-sm">
-                    <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
-                      <svg className="w-5 h-5 mr-2 text-[#1A1464]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 12C14.2091 12 16 10.2091 16 8C16 5.79086 14.2091 4 12 4C9.79086 4 8 5.79086 8 8C8 10.2091 9.79086 12 12 12Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path>
-                        <path d="M12 21C17 21 21 16 21 12C21 8 17 3 12 3C7 3 3 8 3 12C3 16 7 21 12 21Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path>
-                      </svg>
-                      仕入先エリア
-                    </label>
-                    <select
-                      name="supplierArea"
-                      className="w-full border rounded-md px-3 py-1 focus:outline-none focus:ring-2 focus:ring-[#1A1464]"
-                      value={searchParams.supplierArea}
-                      onChange={handleInputChange}
-                    >
-                      {prefectureOptions.map(option => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {/* 重量 */}
-                  <div className="bg-white border border-gray-200 rounded-lg p-3 shadow-sm">
-                    <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
-                      <svg className="w-5 h-5 mr-2 text-[#1A1464]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        {/* 鉄アレイ/重りをイメージしたアイコン */}
-                        <rect x="6" y="4" width="12" height="6" rx="1" stroke="currentColor" strokeWidth="2" />
-                        <rect x="9" y="10" width="6" height="10" rx="1" stroke="currentColor" strokeWidth="2" />
-                        <line x1="8" y1="7" x2="16" y2="7" stroke="currentColor" strokeWidth="1.5" />
-                      </svg>
-                      重量 (kg)
-                    </label>
-                    <input
-                      type="number"
-                      name="weight"
-                      className="w-full border rounded-md px-3 py-1 focus:outline-none focus:ring-2 focus:ring-[#1A1464]"
-                      placeholder="例: 10.5"
-                      value={searchParams.weight}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-
                   {/* 品名 */}
                   <div className="bg-white border border-gray-200 rounded-lg p-3 shadow-sm">
                     <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
@@ -482,27 +727,90 @@ const SearchScreen = () => {
                     />
                   </div>
 
-                  {/* 形状 */}
+                  
+                  {/* 数量/ロット */}
                   <div className="bg-white border border-gray-200 rounded-lg p-3 shadow-sm">
                     <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
                       <svg className="w-5 h-5 mr-2 text-[#1A1464]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M4 5.11182C4 4.49772 4.49772 4 5.11182 4H18.8882C19.5023 4 20 4.49772 20 5.11182V18.8882C20 19.5023 19.5023 20 18.8882 20H5.11182C4.49772 20 4 19.5023 4 18.8882V5.11182Z" stroke="currentColor" strokeWidth="2"></path>
-                        <circle cx="12" cy="12" r="6" stroke="currentColor" strokeWidth="2"></circle>
+                        <path d="M7 16.2686C5.14625 15.1279 4 13.1901 4 11C4 7.68629 7.58172 5 12 5C16.4183 5 20 7.68629 20 11C20 13.1901 18.8537 15.1279 17 16.2686" stroke="currentColor" strokeWidth="2" strokeLinecap="round"></path>
+                        <path d="M12 13V20" stroke="currentColor" strokeWidth="2" strokeLinecap="round"></path>
                       </svg>
-                      形状
+                      数量/ロット
                     </label>
                     <select
-                      name="shape"
+                      name="quantity"
                       className="w-full border rounded-md px-3 py-1 focus:outline-none focus:ring-2 focus:ring-[#1A1464]"
-                      value={searchParams.shape}
+                      value={searchParams.quantity}
                       onChange={handleInputChange}
                     >
-                      {shapeOptions.map(option => (
+                      {quantityOptions.map(option => (
                         <option key={option.value} value={option.value}>
                           {option.label}
                         </option>
                       ))}
                     </select>
+                  </div>
+
+                  {/* 仕入先エリア - 2階層選択に対応（横幅いっぱい） */}
+                  <div className="bg-white border border-gray-200 rounded-lg p-3 shadow-sm md:col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
+                      <svg className="w-5 h-5 mr-2 text-[#1A1464]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 12C14.2091 12 16 10.2091 16 8C16 5.79086 14.2091 4 12 4C9.79086 4 8 5.79086 8 8C8 10.2091 9.79086 12 12 12Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path>
+                        <path d="M12 21C17 21 21 16 21 12C21 8 17 3 12 3C7 3 3 8 3 12C3 16 7 21 12 21Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path>
+                      </svg>
+                      仕入先エリア
+                    </label>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                      {/* エリア選択 */}
+                      <div>
+                        <label className="block text-xs text-gray-500 mb-1">
+                          エリア
+                        </label>
+                        <select
+                          className="w-full border rounded-md px-3 py-1 focus:outline-none focus:ring-2 focus:ring-[#1A1464]"
+                          value={searchParams.supplierArea.region}
+                          onChange={handleRegionChange}
+                        >
+                          <option value="">選択してください</option>
+                          {prefectureOptions.slice(1).map(region => (
+                            <option key={region.value} value={region.value}>
+                              {region.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      
+                      {/* 都道府県選択 - エリアが選択された場合のみ表示 */}
+                      <div>
+                        <label className="block text-xs text-gray-500 mb-1">
+                          都道府県（任意）
+                        </label>
+                        <select
+                          className="w-full border rounded-md px-3 py-1 focus:outline-none focus:ring-2 focus:ring-[#1A1464]"
+                          value={searchParams.supplierArea.prefecture}
+                          onChange={handlePrefectureChange}
+                          disabled={!searchParams.supplierArea.region}
+                        >
+                          <option value="">エリア全体</option>
+                          {searchParams.supplierArea.region && 
+                            prefectureOptions
+                              .find(region => region.value === searchParams.supplierArea.region)?.options
+                              .map(prefecture => (
+                                <option key={prefecture.value} value={prefecture.value}>
+                                  {prefecture.label}
+                                </option>
+                              ))
+                          }
+                        </select>
+                      </div>
+                    </div>
+                    
+                    {searchParams.supplierArea.region && !searchParams.supplierArea.prefecture && (
+                      <div className="mt-1 text-xs text-blue-600">
+                        <p>※ 都道府県を選択しない場合、{prefectureOptions.find(region => region.value === searchParams.supplierArea.region)?.label}全体から検索します</p>
+                      </div>
+                    )}
                   </div>
 
                   <div className="md:col-span-2 mt-5 flex justify-center gap-4">
