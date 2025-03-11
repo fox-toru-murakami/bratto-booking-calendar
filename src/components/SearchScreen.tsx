@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, ChangeEvent, FormEvent } from 'react';
 import { Search, MapPin, Filter, RefreshCw, User, Settings, History, BellRing, LogOut, ChevronDown } from 'lucide-react';
 
 const SearchScreen = () => {
@@ -48,7 +48,7 @@ const SearchScreen = () => {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
 
   // 形状タイプの切り替え
-  const handleShapeTypeChange = (type) => {
+  const handleShapeTypeChange = (type: string) => {
     setSearchParams({
       ...searchParams,
       size: {
@@ -59,7 +59,7 @@ const SearchScreen = () => {
   };
 
   // フォーム入力の処理
-  const handleInputChange = (e, section, subsection = null) => {
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>, section: string, subsection: string | null = null) => {
     const { name, value } = e.target;
     
     if (subsection) {
@@ -79,7 +79,7 @@ const SearchScreen = () => {
   };
 
   // エリア選択時の処理
-  const handleRegionChange = (e) => {
+  const handleRegionChange = (e: ChangeEvent<HTMLSelectElement>) => {
     const regionValue = e.target.value;
     setSearchParams({
       ...searchParams,
@@ -91,7 +91,7 @@ const SearchScreen = () => {
   };
 
   // 都道府県選択時の処理
-  const handlePrefectureChange = (e) => {
+  const handlePrefectureChange = (e: ChangeEvent<HTMLSelectElement>) => {
     const prefectureValue = e.target.value;
     setSearchParams({
       ...searchParams,
@@ -103,7 +103,7 @@ const SearchScreen = () => {
   };
 
   // 材質タイプの切り替え
-  const handleMaterialTypeChange = (type) => {
+  const handleMaterialTypeChange = (type: string) => {
     setSearchParams({
       ...searchParams,
       material: {
@@ -114,7 +114,7 @@ const SearchScreen = () => {
   };
 
   // 材質が選択されたときの処理
-  const handleMaterialSelect = (e) => {
+  const handleMaterialSelect = (e: ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
     setSearchParams({
       ...searchParams,
@@ -127,14 +127,15 @@ const SearchScreen = () => {
   };
 
   // フリー検索実行
-  const handleFreeSearch = (e) => {
+  const handleFreeSearch = (e: FormEvent) => {
     e.preventDefault();
     console.log('自由検索テキスト:', freeSearchText);
     // RAG検索のロジックをここに実装（API呼び出しなど）
+    window.location.href = '/results';
   };
   
   // 検索実行
-  const handleSearch = (e) => {
+  const handleSearch = (e: FormEvent) => {
     e.preventDefault();
     
     if (searchTab === 'free') {
@@ -156,6 +157,9 @@ const SearchScreen = () => {
     
     console.log('条件検索:', searchData);
     // 検索ロジックをここに実装（API呼び出しなど）
+    window.location.href = '/results';
+    
+    
   };
 
   // 検索条件リセット

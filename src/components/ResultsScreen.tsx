@@ -16,7 +16,7 @@ const ResultsScreen = () => {
   const [showSearchForm, setShowSearchForm] = useState(false);
 
   // URLコピーの状態管理
-  const [copiedUrl, setCopiedUrl] = useState(null);
+  const [copiedUrl, setCopiedUrl] = useState<number | null>(null);
 
   // 検索条件の状態（実際には前の画面から渡される）
   const [searchParams, setSearchParams] = useState({
@@ -37,7 +37,7 @@ const ResultsScreen = () => {
   });
 
   // URLをコピーする関数
-  const copyToClipboard = (url, id) => {
+  const copyToClipboard = (url: string, id: number) => {
     navigator.clipboard.writeText(url);
     setCopiedUrl(id);
     
@@ -70,7 +70,7 @@ const ResultsScreen = () => {
           processType: 'cutting',
           quantity: 50,
           amount: 125000,
-          imageUrl: 'https://images.unsplash.com/photo-1617781684523-b8dded3a1259?q=80&w=150&h=150&auto=format&fit=crop'
+          imageUrl: '/sample.png'
         },
         {
           id: 102,
@@ -92,7 +92,7 @@ const ResultsScreen = () => {
           processType: 'cutting',
           quantity: 75,
           amount: 180000,
-          imageUrl: 'https://images.unsplash.com/photo-1621515788745-aecc51e4c690?q=80&w=150&h=150&auto=format&fit=crop'
+          imageUrl: 'sample.png'
         }
       ]
     },
@@ -199,7 +199,7 @@ const ResultsScreen = () => {
           processType: 'cutting',
           quantity: 20,
           amount: 140000,
-          imageUrl: 'https://images.unsplash.com/photo-1610513320995-1ad4bbf25e55?q=80&w=150&h=150&auto=format&fit=crop'
+          imageUrl: 'sample-2.png'
         }
       ]
     }
@@ -214,27 +214,16 @@ const ResultsScreen = () => {
   }, []);
 
   // 検索条件を更新
-  const handleInputChange = (e, section, subsection = null) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    
-    if (subsection) {
-      setSearchParams({
-        ...searchParams,
-        [section]: {
-          ...searchParams[section],
-          [subsection]: value
-        }
-      });
-    } else {
-      setSearchParams({
-        ...searchParams,
-        [name]: value
-      });
-    }
+    setSearchParams({
+      ...searchParams,
+      [name]: value
+    });
   };
   
   // 検索実行
-  const handleSearch = (e) => {
+  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log('検索条件:', searchParams);
     // 検索ロジックをここに実装（API呼び出しなど）
@@ -242,7 +231,7 @@ const ResultsScreen = () => {
   };
 
   // 形状タイプの切り替え
-  const handleShapeTypeChange = (type) => {
+  const handleShapeTypeChange = (type: string) => {
     setSearchParams({
       ...searchParams,
       size: {
@@ -253,7 +242,7 @@ const ResultsScreen = () => {
   };
 
   // 詳細表示の切り替え
-  const toggleDetail = (id) => {
+  const toggleDetail = (id: number) => {
     setResults(
       results.map(result => {
         if (result.id === id) {
@@ -268,7 +257,7 @@ const ResultsScreen = () => {
   const [sortOption, setSortOption] = useState('matchDegree');
   
   // 並べ替え処理
-  const handleSort = (option) => {
+  const handleSort = (option: string) => {
     setSortOption(option);
     
     // 並べ替えロジック
@@ -347,7 +336,7 @@ const ResultsScreen = () => {
               <div className="font-medium">
                 {searchParams.size.type === 'round' 
                   ? `φ${searchParams.size.diameter}×${searchParams.size.length}mm`
-                  : `${searchParams.size.minSize || '0'}〜${searchParams.size.maxSize || '0'}mm`}
+                  : `${searchParams.size.diameter}〜${searchParams.size.length}mm`}
               </div>
             </div>
           </div>
@@ -479,7 +468,7 @@ const ResultsScreen = () => {
                       type="number"
                       className="w-full border rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900"
                       value={searchParams.size.diameter}
-                      onChange={(e) => handleInputChange(e, 'size', 'diameter')}
+                      onChange={handleInputChange}
                     />
                   </div>
                   <div className="bg-white p-2 rounded-lg shadow-sm">
@@ -490,7 +479,7 @@ const ResultsScreen = () => {
                       type="number"
                       className="w-full border rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900"
                       value={searchParams.size.length}
-                      onChange={(e) => handleInputChange(e, 'size', 'length')}
+                      onChange={handleInputChange}
                     />
                   </div>
                 </div>
@@ -503,8 +492,8 @@ const ResultsScreen = () => {
                     <input
                       type="number"
                       className="w-full border rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900"
-                      value={searchParams.size.minSize}
-                      onChange={(e) => handleInputChange(e, 'size', 'minSize')}
+                      value={searchParams.size.diameter}
+                      onChange={handleInputChange}
                     />
                   </div>
                   <div className="bg-white p-2 rounded-lg shadow-sm">
@@ -514,8 +503,8 @@ const ResultsScreen = () => {
                     <input
                       type="number"
                       className="w-full border rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900"
-                      value={searchParams.size.maxSize}
-                      onChange={(e) => handleInputChange(e, 'size', 'maxSize')}
+                      value={searchParams.size.length}
+                      onChange={handleInputChange}
                     />
                   </div>
                 </div>
@@ -751,7 +740,7 @@ const ResultsScreen = () => {
                       </a>
                       <button
                         onClick={() => copyToClipboard(result.supplierWebsite, result.id)}
-                        className="text-gray-500 hover:text-blue-600 p-1 ml-auto"
+                        className="text-gray-500 hover:text-blue-600 p-1"
                         title="URLをコピー"
                       >
                         <Copy size={14} />
@@ -790,7 +779,7 @@ const ResultsScreen = () => {
                             <td className="px-3 py-2">
                               {history.size.type === 'round' 
                                 ? `φ${history.size.diameter}×${history.size.length}mm` 
-                                : `${history.size.minSize}〜${history.size.maxSize}mm`}
+                                : `${history.size.diameter}〜${history.size.length}mm`}
                             </td>
                             <td className="px-3 py-2">{history.processType === 'cutting' ? '切削加工' : history.processType}</td>
                             <td className="px-3 py-2 text-right">{history.quantity}個</td>
@@ -909,7 +898,7 @@ const ResultsScreen = () => {
         <div className="flex items-center justify-between mb-6">
           <button
             className="flex items-center text-gray-600 hover:text-blue-600"
-            onClick={() => console.log('検索画面に戻る')}
+            onClick={() => {console.log('検索画面に戻る');window.location.href = '/';}}
           >
             <ArrowLeft size={20} />
             <span className="ml-1">検索画面に戻る</span>
