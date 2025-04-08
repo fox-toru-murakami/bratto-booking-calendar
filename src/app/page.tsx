@@ -1,6 +1,6 @@
 'use client';
-import SearchScreen from '../components/SearchScreen';
+import BrattoPropertySystem from '../components/BrattoPropertySystem';
 
 export default function Home() {
-  return <SearchScreen />;
+  return <BrattoPropertySystem />;
 }
