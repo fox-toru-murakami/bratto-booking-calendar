@@ -275,7 +275,6 @@ const BrattoPropertySystem = () => {
       { id: 45, propertyId: '412', startDate: '2025-04-15', endDate: '2025-04-15', type: 'cleaning' }, // 4 days after reservation ends on 4/11
       { id: 48, propertyId: '906', startDate: '2025-04-18', endDate: '2025-04-18', type: 'cleaning' }, // 4 days after reservation ends on 4/14
       { id: 49, propertyId: '1001', startDate: '2025-04-11', endDate: '2025-04-11', type: 'cleaning' }, // 4 days after reservation ends on 4/7
-      { id: 51, propertyId: '1005', startDate: '2025-04-19', endDate: '2025-04-19', type: 'cleaning' }, // 4 days after reservation ends on 4/15
       { id: 53, propertyId: '1009', startDate: '2025-04-15', endDate: '2025-04-15', type: 'cleaning' }, // 5 days after reservation ends on 4/10
       
       // Some cleanings scheduled far in advance for end-of-month reservations
@@ -1012,7 +1011,7 @@ const BrattoPropertySystem = () => {
                 物件名
               </div>
               <div className="w-12 py-2 px-1 font-medium text-gray-700 text-center bg-gray-50 border-r sticky top-0">
-                ID
+                号室
               </div>
               <div className="flex-1 flex sticky top-0 z-10">
                 {days.map((day, i) => (
