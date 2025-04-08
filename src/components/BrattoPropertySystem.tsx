@@ -225,7 +225,7 @@ const BrattoPropertySystem = () => {
   const properties = generateProperties();
 
   // Sample reservation data (for demonstration)
-  const [reservations, setReservations] = useState(() => {
+  const [reservations] = useState(() => {
     const baseReservations = [
       // Reservations - using lighter pink color rgb(255, 165, 165)
       { id: 1, propertyId: '301', startDate: '2025-04-01', endDate: '2025-04-08', type: 'reservation' },
@@ -524,7 +524,8 @@ const BrattoPropertySystem = () => {
     const isStart = isStartDate(propertyId, day.date);
     const isEnd = isEndDate(propertyId, day.date);
     
-    let style = {};
+    const style = {backgroundColor: 'transparent', boxShadow: 'none', borderTopLeftRadius: '0',
+       borderBottomLeftRadius: '0', borderTopRightRadius: '0', borderBottomRightRadius: '0', borderLeft: 'none', borderRight: 'none'};
     
     switch(status.type) {
       case 'reservation':

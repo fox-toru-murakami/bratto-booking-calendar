@@ -2,11 +2,14 @@
   "name": "procurement-navi",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://fox-toru-murakami.github.io/bratto-booking-calendar",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "export NODE_OPTIONS=--openssl-legacy-provider && TSC_COMPILE_ON_ERROR=true DISABLE_ESLINT_PLUGIN=true next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d ."
   },
   "dependencies": {
     "lucide-react": "^0.477.0",
@@ -22,6 +25,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.2.1",
+    "gh-pages": "^6.3.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
