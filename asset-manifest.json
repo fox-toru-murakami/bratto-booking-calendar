@@ -1,0 +1,24 @@
+{
+  "files": {
+    "main.css": "/bratto-booking-calendar/static/css/main.c2846a66.chunk.css",
+    "main.js": "/bratto-booking-calendar/static/js/main.21a95a56.chunk.js",
+    "main.js.map": "/bratto-booking-calendar/static/js/main.21a95a56.chunk.js.map",
+    "runtime-main.js": "/bratto-booking-calendar/static/js/runtime-main.8605bee3.js",
+    "runtime-main.js.map": "/bratto-booking-calendar/static/js/runtime-main.8605bee3.js.map",
+    "static/js/2.22d38215.chunk.js": "/bratto-booking-calendar/static/js/2.22d38215.chunk.js",
+    "static/js/2.22d38215.chunk.js.map": "/bratto-booking-calendar/static/js/2.22d38215.chunk.js.map",
+    "static/js/3.9ee8df5c.chunk.js": "/bratto-booking-calendar/static/js/3.9ee8df5c.chunk.js",
+    "static/js/3.9ee8df5c.chunk.js.map": "/bratto-booking-calendar/static/js/3.9ee8df5c.chunk.js.map",
+    "index.html": "/bratto-booking-calendar/index.html",
+    "precache-manifest.841deecc8be215bf3f5a9c62c2d9f1ec.js": "/bratto-booking-calendar/precache-manifest.841deecc8be215bf3f5a9c62c2d9f1ec.js",
+    "service-worker.js": "/bratto-booking-calendar/service-worker.js",
+    "static/css/main.c2846a66.chunk.css.map": "/bratto-booking-calendar/static/css/main.c2846a66.chunk.css.map",
+    "static/js/2.22d38215.chunk.js.LICENSE.txt": "/bratto-booking-calendar/static/js/2.22d38215.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.8605bee3.js",
+    "static/js/2.22d38215.chunk.js",
+    "static/css/main.c2846a66.chunk.css",
+    "static/js/main.21a95a56.chunk.js"
+  ]
+}
