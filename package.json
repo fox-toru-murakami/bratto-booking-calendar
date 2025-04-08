@@ -9,7 +9,7 @@
     "start": "next start",
     "lint": "next lint",
     "predeploy": "npm run build",
-    "deploy": "gh-pages --dist out --maxFileCount 50 --add --message \"Deploy update\""
+    "deploy": "gh-pages --dist out --maxFileCount 10 --add --silent"
   },
   "dependencies": {
     "lucide-react": "^0.477.0",
